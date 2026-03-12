@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  // Middleware appends ?redirect=... for protected route access attempts.
   const redirectTo = searchParams.get("redirect") || "/";
 
   const [email, setEmail] = useState("");
@@ -20,8 +21,10 @@ function SignInForm() {
     setError(null);
     setLoading(true);
 
+    // Browser client is required for interactive auth session updates.
     const supabase = createClient();
 
+    // Step 1) Credential-based sign-in against Supabase Auth.
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -33,6 +36,7 @@ function SignInForm() {
       return;
     }
 
+    // Step 2) Return user to intended page (or home fallback) and re-render data.
     router.push(redirectTo);
     router.refresh();
   }
@@ -95,6 +99,7 @@ export default function SignInPage() {
           </p>
         </div>
 
+        {/* useSearchParams requires suspense in App Router client rendering. */}
         <Suspense fallback={<div className="h-48" />}>
           <SignInForm />
         </Suspense>

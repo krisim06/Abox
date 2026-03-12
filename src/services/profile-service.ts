@@ -8,6 +8,7 @@ export async function getProfileByUsername(
 ): Promise<ProfileData | null> {
   const supabase = await createClient();
 
+  // Step 1) Resolve creator profile row by unique username.
   const { data: userRow, error } = await supabase
     .from("users")
     .select("*")
@@ -16,30 +17,17 @@ export async function getProfileByUsername(
 
   if (error || !userRow) return null;
 
+  // Step 2) Map DB row into app-level user shape.
   const user = mapDbUser(userRow as DbUser);
 
-  const [contentCount, followerCount, followingCount] = await Promise.all([
-    supabase
-      .from("contents")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .then(({ count }) => count ?? 0),
-    supabase
-      .from("follows")
-      .select("id", { count: "exact", head: true })
-      .eq("following_id", user.id)
-      .then(({ count }) => count ?? 0),
-    supabase
-      .from("follows")
-      .select("id", { count: "exact", head: true })
-      .eq("follower_id", user.id)
-      .then(({ count }) => count ?? 0),
-  ]);
+  // Step 3) Fetch published content count for profile summary metrics.
+  const { count } = await supabase
+    .from("contents")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id);
 
   return {
     user,
-    contentCount,
-    followerCount,
-    followingCount,
+    contentCount: count ?? 0,
   };
 }

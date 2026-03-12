@@ -6,12 +6,14 @@ import type { DbUser } from "@/types";
 export async function getCurrentUser(): Promise<User | null> {
   const supabase = await createClient();
 
+  // Step 1) Resolve authenticated Supabase user from session/cookies.
   const {
     data: { user: authUser },
   } = await supabase.auth.getUser();
 
   if (!authUser) return null;
 
+  // Step 2) Resolve public profile row used by app domain layer.
   const { data: profile } = await supabase
     .from("users")
     .select("*")
@@ -20,13 +22,6 @@ export async function getCurrentUser(): Promise<User | null> {
 
   if (!profile) return null;
 
+  // Step 3) Map DB row (snake_case) into domain shape (camelCase).
   return mapDbUser(profile as DbUser);
-}
-
-export async function requireUser(): Promise<User> {
-  const user = await getCurrentUser();
-  if (!user) {
-    throw new Error("Authentication required");
-  }
-  return user;
 }

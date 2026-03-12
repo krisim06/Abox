@@ -2,6 +2,7 @@ import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
+  // Keep auth/session logic centralized in one place.
   return await updateSession(request);
 }
 

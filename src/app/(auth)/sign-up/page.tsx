@@ -18,8 +18,10 @@ export default function SignUpPage() {
     setError(null);
     setLoading(true);
 
+    // Normalize once so validation/query/auth metadata all use the same value.
     const trimmedUsername = username.trim().toLowerCase();
 
+    // Step 1) Cheap client-side validation for faster feedback before network calls.
     if (!trimmedUsername || trimmedUsername.length < 3) {
       setError("Username must be at least 3 characters");
       setLoading(false);
@@ -34,6 +36,8 @@ export default function SignUpPage() {
 
     const supabase = createClient();
 
+    // Step 2) Pre-check duplicate usernames in public profile table.
+    // DB constraints are still the source of truth; this avoids obvious retries.
     const { data: existing } = await supabase
       .from("users")
       .select("id")
@@ -46,6 +50,8 @@ export default function SignUpPage() {
       return;
     }
 
+    // Step 3) Create auth user and pass username in metadata.
+    // The DB trigger reads this value and inserts public.users profile row.
     const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
@@ -53,6 +59,7 @@ export default function SignUpPage() {
     });
 
     if (signUpError) {
+      // Keep UI message stable for username race conditions and unique violations.
       const msg = signUpError.message.toLowerCase();
       if (msg.includes("unique") || msg.includes("username")) {
         setError("Username is already taken");
@@ -63,6 +70,7 @@ export default function SignUpPage() {
       return;
     }
 
+    // Step 4) Session is ready, move user into product flow.
     router.push("/");
     router.refresh();
   }

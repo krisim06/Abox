@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { SignOutButton } from "@/components/sign-out-button";
 
 export async function Header() {
+  // Server-side user resolution so navigation reflects auth state on first render.
   const user = await getCurrentUser();
 
   return (
@@ -13,14 +14,17 @@ export async function Header() {
         </Link>
 
         <div className="flex items-center gap-4">
+          {/* Auth-aware navigation: creator actions when signed in, entry actions otherwise. */}
           {user ? (
             <>
+              {/* Primary creator action kept visible in global nav. */}
               <Link
                 href="/upload"
                 className="rounded-lg bg-black px-3.5 py-1.5 text-sm font-medium text-white hover:bg-gray-800"
               >
                 Upload
               </Link>
+              {/* Profile shortcut reinforces identity + creator ownership. */}
               <Link
                 href={`/@${user.username}`}
                 className="text-sm font-medium text-gray-700 hover:text-black"

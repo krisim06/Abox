@@ -22,7 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} font-sans antialiased`}>
+        {/* Global navigation shared across all routes. */}
         <Header />
+        {/* Page content container to keep route UIs consistently centered/sized. */}
         <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
       </body>
     </html>

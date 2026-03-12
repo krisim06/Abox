@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { mapDbContent } from "@/lib/mappers";
 import { isValidStorageUrl } from "@/lib/storage";
@@ -19,10 +20,12 @@ export async function createContent(
 ): Promise<ServiceResult<Content>> {
   const supabase = await createClient();
 
+  // Normalize early so all downstream checks use consistent values.
   const title = input.title.trim();
   const prompt = input.prompt.trim();
   const model = input.model.trim();
 
+  // Guard rails for required publishing metadata.
   if (!title || title.length > 200) {
     return { success: false, error: "Title is required and must be under 200 characters" };
   }
@@ -39,6 +42,7 @@ export async function createContent(
     return { success: false, error: "Invalid image URL" };
   }
 
+  // Remix safety: parent must exist when parentContentId is provided.
   if (input.parentContentId) {
     const { data: parent } = await supabase
       .from("contents")
@@ -51,6 +55,7 @@ export async function createContent(
     }
   }
 
+  // Single insert path for both original uploads and remixes.
   const { data, error } = await supabase
     .from("contents")
     .insert({
@@ -73,11 +78,12 @@ export async function createContent(
   return { success: true, data: mapDbContent(data as DbContent) };
 }
 
-export async function getContentById(
+export const getContentById = cache(async function getContentById(
   id: string
 ): Promise<ContentWithCreator | null> {
   const supabase = await createClient();
 
+  // Join creator fields in one query to avoid extra round trips.
   const { data, error } = await supabase
     .from("contents")
     .select(`
@@ -104,13 +110,14 @@ export async function getContentById(
       avatarUrl: creator.avatar_url,
     },
   };
-}
+});
 
 export async function getFeed(
   page: number = 1,
   limit: number = 20
 ): Promise<PaginatedResult<ContentWithCreator>> {
   const supabase = await createClient();
+  // Offset pagination keeps query shape simple for MVP feed browsing.
   const offset = (page - 1) * limit;
 
   const { data, error, count } = await supabase
@@ -164,6 +171,7 @@ export async function getContentsByUserId(
   limit: number = 20
 ): Promise<PaginatedResult<Content>> {
   const supabase = await createClient();
+  // Reuse the same pagination contract as feed for UI consistency.
   const offset = (page - 1) * limit;
 
   const { data, error, count } = await supabase
@@ -196,6 +204,7 @@ export async function getRemixes(
 ): Promise<ContentWithCreator[]> {
   const supabase = await createClient();
 
+  // Remix list is defined by parent -> child relation.
   const { data, error } = await supabase
     .from("contents")
     .select(

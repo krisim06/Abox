@@ -9,7 +9,9 @@ interface HomePageProps {
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const params = await searchParams;
+  // Defensive parsing to keep pagination stable for invalid query input.
   const page = Math.max(1, parseInt(params.page ?? "1", 10) || 1);
+  // Request one extra item than the visual grid baseline to improve "has more" signal.
   const feed = await getFeed(page, 21);
 
   return (
@@ -21,6 +23,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         </p>
       </div>
 
+      {/* Empty state keeps first-time experience actionable. */}
       {feed.items.length === 0 ? (
         <EmptyState
           title="No content yet"
@@ -36,8 +39,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         />
       ) : (
         <>
+          {/* Main discovery surface for recently published works. */}
           <ContentGrid items={feed.items} />
 
+          {/* Render pager only when backward/forward navigation is meaningful. */}
           {(page > 1 || feed.hasMore) && (
             <div className="mt-8 flex items-center justify-center gap-4">
               {page > 1 && (

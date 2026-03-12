@@ -14,6 +14,7 @@ export async function generateMetadata({
   params,
 }: ContentPageProps): Promise<Metadata> {
   const { id } = await params;
+  // Reuse domain fetch so page metadata stays consistent with rendered content.
   const content = await getContentById(id);
 
   if (!content) {
@@ -28,14 +29,17 @@ export async function generateMetadata({
 
 export default async function ContentPage({ params }: ContentPageProps) {
   const { id } = await params;
+  // Step 1) Load the primary content record.
   const content = await getContentById(id);
 
   if (!content) {
     notFound();
   }
 
+  // Step 2) Load children for remix discovery on the same page.
   const remixes = await getRemixes(content.id);
 
+  // Step 3) If this is a remix, resolve parent for attribution context.
   let parentContent = null;
   if (content.parentContentId) {
     parentContent = await getContentById(content.parentContentId);
@@ -58,6 +62,7 @@ export default async function ContentPage({ params }: ContentPageProps) {
         <div className="space-y-5 p-6">
           <div>
             <h1 className="text-2xl font-bold">{content.title}</h1>
+            {/* Show lineage only when this content is derived from a parent. */}
             {content.parentContentId && parentContent && (
               <p className="mt-1 text-sm text-gray-500">
                 Remixed from{" "}
@@ -87,6 +92,7 @@ export default async function ContentPage({ params }: ContentPageProps) {
           </Link>
 
           <div className="space-y-3 rounded-lg bg-gray-50 p-4">
+            {/* Keep generation metadata visible for reproducibility/remix utility. */}
             <div>
               <dt className="text-xs font-medium uppercase tracking-wide text-gray-500">
                 Prompt
@@ -114,6 +120,7 @@ export default async function ContentPage({ params }: ContentPageProps) {
           </div>
 
           <div className="flex items-center gap-3 border-t border-gray-100 pt-4">
+            {/* Primary CTA for the core product loop: create remix from this source. */}
             <Link
               href={`/remix/${content.id}`}
               className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
@@ -132,12 +139,15 @@ export default async function ContentPage({ params }: ContentPageProps) {
       </div>
 
       {remixes.length > 0 && (
-        <section className="mt-10">
+        <>
+          {/* Render only when there are derived works to discover. */}
+          <section className="mt-10">
           <h2 className="mb-4 text-lg font-semibold">
             Remixes ({remixes.length})
           </h2>
           <ContentGrid items={remixes} />
-        </section>
+          </section>
+        </>
       )}
     </div>
   );

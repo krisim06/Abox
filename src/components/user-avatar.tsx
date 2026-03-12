@@ -15,6 +15,7 @@ const sizeClasses = {
 export function UserAvatar({ username, avatarUrl, size = "md" }: UserAvatarProps) {
   const classes = sizeClasses[size];
 
+  // Preferred path: render uploaded profile image when available.
   if (avatarUrl) {
     return (
       <Image
@@ -27,6 +28,7 @@ export function UserAvatar({ username, avatarUrl, size = "md" }: UserAvatarProps
     );
   }
 
+  // Fallback path: render deterministic initial so UI stays informative without image.
   return (
     <div
       className={`${classes} flex items-center justify-center rounded-full bg-gray-200 font-medium text-gray-600`}
