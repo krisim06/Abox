@@ -46,28 +46,21 @@ export default function SignUpPage() {
       return;
     }
 
-    const { data, error: signUpError } = await supabase.auth.signUp({
+    const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
+      options: { data: { username: trimmedUsername } },
     });
 
     if (signUpError) {
-      setError(signUpError.message);
+      const msg = signUpError.message.toLowerCase();
+      if (msg.includes("unique") || msg.includes("username")) {
+        setError("Username is already taken");
+      } else {
+        setError(signUpError.message);
+      }
       setLoading(false);
       return;
-    }
-
-    if (data.user) {
-      const { error: profileError } = await supabase.from("users").insert({
-        id: data.user.id,
-        username: trimmedUsername,
-      });
-
-      if (profileError) {
-        setError("Failed to create profile. Please try again.");
-        setLoading(false);
-        return;
-      }
     }
 
     router.push("/");
