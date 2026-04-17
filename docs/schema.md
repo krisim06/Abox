@@ -6,6 +6,7 @@ Database: Supabase PostgreSQL
 
 This is the initial schema for the MVP.
 It should support:
+
 - users
 - content publishing
 - remix relationships
@@ -18,6 +19,7 @@ It should support:
 Represents creator profiles.
 
 Fields:
+
 - id (uuid, primary key)
 - username (text, unique, required)
 - bio (text, nullable)
@@ -31,6 +33,7 @@ Fields:
 Represents published AI-generated content.
 
 Fields:
+
 - id (uuid, primary key)
 - user_id (uuid, foreign key to users.id, required)
 - title (text, required)
@@ -42,6 +45,7 @@ Fields:
 - created_at (timestamp, required)
 
 Notes:
+
 - parent_content_id is nullable for original content
 - parent_content_id is set when a content item is a remix
 
@@ -52,12 +56,14 @@ Notes:
 Represents a user liking a content item.
 
 Fields:
+
 - id (uuid, primary key)
 - user_id (uuid, foreign key to users.id, required)
 - content_id (uuid, foreign key to contents.id, required)
 - created_at (timestamp, required)
 
 Constraint:
+
 - unique(user_id, content_id)
 
 ---
@@ -67,12 +73,14 @@ Constraint:
 Represents one user following another.
 
 Fields:
+
 - id (uuid, primary key)
 - follower_id (uuid, foreign key to users.id, required)
 - following_id (uuid, foreign key to users.id, required)
 - created_at (timestamp, required)
 
 Constraint:
+
 - unique(follower_id, following_id)
 
 ---
@@ -80,6 +88,7 @@ Constraint:
 ## Suggested Future Indexes
 
 Consider indexes for:
+
 - contents.created_at
 - contents.user_id
 - contents.parent_content_id
@@ -92,6 +101,7 @@ Consider indexes for:
 ## Row-Level Security Considerations
 
 Later, policies should ensure:
+
 - only authenticated users can upload
 - only content owners can edit/delete their own content
 - public content can be read by everyone

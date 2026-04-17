@@ -11,9 +11,11 @@ It is a creator-platform product centered around publishing and remix relationsh
 ## Initial Scope
 
 Initial content type:
+
 - image
 
 Initial core domains:
+
 - auth
 - content
 - remix
@@ -25,36 +27,45 @@ Initial core domains:
 ## System Layers
 
 ### UI Layer
+
 Responsible for:
+
 - page composition
 - rendering
 - user interactions
 
 Examples:
+
 - pages
 - layouts
 - reusable presentational components
 
 ### Service Layer
+
 Responsible for:
+
 - business workflows
 - authorization checks
 - validation orchestration
 - domain logic
 
 Examples:
+
 - createContent
 - getFeed
 - remixContent
 - getProfileByUsername
 
 ### Data Layer
+
 Responsible for:
+
 - database access
 - storage access
 - row-to-domain mapping
 
 Examples:
+
 - Supabase client
 - storage utilities
 - DB query modules
@@ -64,12 +75,15 @@ Examples:
 ## Core Entities
 
 ### User
+
 A creator account on the platform.
 
 ### Content
+
 A published AI-generated work with metadata.
 
 Key fields:
+
 - title
 - prompt
 - model
@@ -80,9 +94,11 @@ Key fields:
 - createdAt
 
 ### RemixRelation
+
 A parent-child relationship between two content items.
 
 This supports:
+
 - remix flow
 - attribution
 - future lineage tree
@@ -104,20 +120,25 @@ This supports:
 ## Current Infrastructure
 
 Frontend:
+
 - Next.js App Router
 - Tailwind CSS
 - TypeScript
 
 Backend:
+
 - Next.js Route Handlers / Server Actions
 
 Database:
+
 - Supabase PostgreSQL
 
 Storage:
+
 - Supabase Storage
 
 Hosting:
+
 - Vercel
 
 ---
@@ -125,6 +146,7 @@ Hosting:
 ## Future-Ready Design Requirements
 
 Even in MVP, do not block future support for:
+
 - pagination
 - search
 - moderation

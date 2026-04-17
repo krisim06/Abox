@@ -10,6 +10,7 @@ It is a publishing, remix, discovery, and creator-platform product.
 The product starts image-first.
 
 Core loop:
+
 - creation (창작)
 - sharing (공유)
 - remix (재창작)
@@ -23,6 +24,7 @@ Core loop:
 ABox should begin as a creator tool and publishing platform first.
 
 Priority order:
+
 1. creator utility
 2. publishing
 3. remix
@@ -37,6 +39,7 @@ Do not build unnecessary platform features too early.
 ## MVP Scope
 
 The MVP should include:
+
 - authentication
 - content upload
 - content detail page
@@ -46,6 +49,7 @@ The MVP should include:
 - parent-child remix relationship
 
 Do not include yet unless explicitly requested:
+
 - payments
 - advanced recommendation systems
 - internal AI generation
@@ -60,15 +64,18 @@ Do not include yet unless explicitly requested:
 The initial remix experience should be simple for users, but the data model must support future expansion.
 
 User-facing MVP:
+
 - remix this content
 - prefill prompt/model/seed
 - save as new content
 
 Internal requirement:
+
 - preserve parent-child relationship
 - enable future remix tree / lineage graph
 
 Always protect future support for:
+
 - fork systems
 - derived content lineage
 - attribution
@@ -79,12 +86,14 @@ Always protect future support for:
 ## Engineering Philosophy
 
 Build the smallest version that is:
+
 - real
 - clean
 - extensible
 - production-sound
 
 Avoid:
+
 - fragile shortcuts
 - architecture drift
 - mixing concerns
@@ -97,6 +106,7 @@ The codebase should feel like a real startup product, not a demo app.
 ## Implementation Priorities
 
 When building, prioritize in this order:
+
 1. correctness
 2. clarity
 3. maintainability
@@ -110,6 +120,7 @@ Do not sacrifice correctness for speed in core flows.
 ## Required Workflow
 
 Before implementation:
+
 1. read `/docs/prd.md`
 2. read `/docs/schema.md`
 3. read `/docs/architecture.md` if present
@@ -117,12 +128,14 @@ Before implementation:
 5. propose a short implementation plan
 
 Implementation:
+
 - work incrementally
 - keep changes scoped
 - follow layered architecture
 - preserve consistency
 
 After implementation:
+
 - verify types
 - verify imports
 - verify no architecture violations
@@ -152,6 +165,7 @@ Business logic belongs in services.
 Assume user input is untrusted.
 
 Always think about:
+
 - ownership
 - authorization
 - validation
@@ -161,6 +175,7 @@ Always think about:
 - service boundaries
 
 When changing schema-sensitive logic, consider:
+
 - foreign keys
 - indexes
 - constraints
@@ -172,6 +187,7 @@ When changing schema-sensitive logic, consider:
 ## Quality Bar
 
 All code should be good enough that:
+
 - another engineer can onboard quickly
 - future features can be added without rewrites
 - the code would not be embarrassing in a strong startup code review
@@ -184,6 +200,7 @@ clean, minimal, structured, production-ready.
 ## What Good Looks Like
 
 Good output from the agent includes:
+
 - clear file boundaries
 - strong typing
 - minimal but solid abstractions
@@ -193,6 +210,7 @@ Good output from the agent includes:
 - room for future growth
 
 Bad output includes:
+
 - giant files
 - logic mixed into pages
 - duplicated queries
@@ -207,6 +225,7 @@ Bad output includes:
 Always build as a pragmatic product engineer.
 
 That means:
+
 - move fast
 - but protect the codebase
 - choose simple solutions

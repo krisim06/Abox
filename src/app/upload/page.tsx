@@ -1,71 +1,17 @@
 "use client";
 
-import { useActionState, useCallback, useRef, useState } from "react";
+import { useActionState } from "react";
 import { uploadAction, type UploadState } from "./actions";
-import { createClient } from "@/lib/supabase/client";
-import { validateImageFile, uploadContentImage } from "@/lib/storage";
+import { useImageUpload } from "@/hooks/use-image-upload";
+import { ImagePicker } from "@/components/image-picker";
 
 const initialState: UploadState = { error: null };
 
 export default function UploadPage() {
   const [state, formAction, isPending] = useActionState(uploadAction, initialState);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const upload = useImageUpload();
 
-  const revokePreview = useCallback(() => {
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-    }
-  }, [previewUrl]);
-
-  function handleReset() {
-    revokePreview();
-    setPreviewUrl(null);
-    setImageUrl(null);
-    setUploadError(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  }
-
-  async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadError(null);
-    const validationError = validateImageFile(file);
-    if (validationError) {
-      setUploadError(validationError);
-      return;
-    }
-
-    revokePreview();
-    setPreviewUrl(URL.createObjectURL(file));
-    setUploading(true);
-
-    try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setUploadError("You must be signed in to upload");
-        return;
-      }
-
-      const result = await uploadContentImage(supabase, user.id, file);
-      setImageUrl(result.publicUrl);
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Upload failed");
-      revokePreview();
-      setPreviewUrl(null);
-    } finally {
-      setUploading(false);
-    }
-  }
-
-  const displayError = uploadError || state.error;
+  const displayError = upload.error || state.error;
 
   return (
     <div className="mx-auto max-w-lg">
@@ -75,52 +21,15 @@ export default function UploadPage() {
       </p>
 
       <form action={formAction} className="mt-8 space-y-5">
-        <input type="hidden" name="imageUrl" value={imageUrl ?? ""} />
+        <input type="hidden" name="imageUrl" value={upload.imageUrl ?? ""} />
 
-        <div>
-          <label className="block text-sm font-medium">Image</label>
-          <div className="mt-1">
-            {previewUrl ? (
-              <div>
-                <div className="relative aspect-square w-full max-w-xs overflow-hidden rounded-lg border border-gray-200">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={previewUrl}
-                    alt="Preview"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  disabled={uploading}
-                  className="mt-2 text-sm text-gray-500 hover:text-black disabled:opacity-50"
-                >
-                  Change image
-                </button>
-              </div>
-            ) : (
-              <label className="flex aspect-square w-full max-w-xs cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 hover:border-gray-400">
-                <div className="text-center">
-                  <p className="text-sm text-gray-500">Click to upload</p>
-                  <p className="mt-1 text-xs text-gray-400">
-                    JPEG, PNG, WebP, GIF up to 10MB
-                  </p>
-                </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-              </label>
-            )}
-            {uploading && (
-              <p className="mt-2 text-sm text-gray-500">Uploading image...</p>
-            )}
-          </div>
-        </div>
+        <ImagePicker
+          previewUrl={upload.previewUrl}
+          uploading={upload.uploading}
+          fileInputRef={upload.fileInputRef}
+          onImageChange={upload.handleImageChange}
+          onReset={upload.handleReset}
+        />
 
         <div>
           <label htmlFor="title" className="block text-sm font-medium">
@@ -186,7 +95,7 @@ export default function UploadPage() {
 
         <button
           type="submit"
-          disabled={isPending || uploading || !imageUrl}
+          disabled={isPending || upload.uploading || !upload.imageUrl}
           className="w-full rounded-lg bg-black px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isPending ? "Publishing..." : "Publish"}

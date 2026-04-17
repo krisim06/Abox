@@ -7,6 +7,7 @@ ABox is an AI creator publishing platform for image-first AI content.
 The goal is to help creators publish, share, remix, and discover AI-generated works.
 
 Core loop:
+
 - creation (창작)
 - sharing (공유)
 - remix (재창작)
@@ -26,6 +27,7 @@ Today, creators often use external tools to generate content, then publish on ge
 ## Product Vision
 
 ABox should become a creator-native platform where AI-generated content can be:
+
 - published cleanly
 - attributed properly
 - remixed easily
@@ -36,6 +38,7 @@ ABox should become a creator-native platform where AI-generated content can be:
 ## Target Users
 
 Initial target users:
+
 - AI image creators
 - Midjourney users
 - Stable Diffusion users
@@ -46,6 +49,7 @@ Initial target users:
 ## MVP Goals
 
 The MVP should prove that creators are willing to:
+
 - upload their works
 - attach metadata
 - view other creators’ works
@@ -57,10 +61,13 @@ The MVP should prove that creators are willing to:
 ## MVP Features
 
 ### 1. Authentication
+
 Users can sign up, sign in, and access authenticated product features.
 
 ### 2. Content Upload
+
 Users can upload image-based AI content with metadata:
+
 - title
 - prompt
 - model
@@ -68,10 +75,13 @@ Users can upload image-based AI content with metadata:
 - image file
 
 ### 3. Public Feed
+
 Users can browse recently published content.
 
 ### 4. Content Detail Page
+
 Each content item should have its own detail page with:
+
 - image
 - title
 - creator
@@ -81,15 +91,19 @@ Each content item should have its own detail page with:
 - remix action
 
 ### 5. Creator Profile
+
 Each user should have a profile page showing:
+
 - username
 - avatar
 - bio
 - created works
 
 ### 6. Remix Flow
+
 Users should be able to remix an existing work.
 The remix flow should:
+
 - prefill prompt/model/seed from the source work
 - let the user modify metadata
 - save a new content item
@@ -100,6 +114,7 @@ The remix flow should:
 ## Non-Goals for MVP
 
 Do not build these yet:
+
 - AI generation inside the platform
 - payments
 - subscriptions
@@ -124,6 +139,7 @@ Do not build these yet:
 ## Success Criteria
 
 Initial success signals:
+
 - first 50 creators sign up
 - creators upload at least 3 pieces of content on average
 - at least some users use remix

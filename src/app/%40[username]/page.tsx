@@ -66,20 +66,10 @@ export default async function ProfilePage({
           {profile.user.bio && (
             <p className="mt-1 text-sm text-gray-600">{profile.user.bio}</p>
           )}
-          <div className="mt-3 flex gap-5 text-sm">
-            <span>
-              <strong>{profile.contentCount}</strong>{" "}
-              <span className="text-gray-500">works</span>
-            </span>
-            <span>
-              <strong>{profile.followerCount}</strong>{" "}
-              <span className="text-gray-500">followers</span>
-            </span>
-            <span>
-              <strong>{profile.followingCount}</strong>{" "}
-              <span className="text-gray-500">following</span>
-            </span>
-          </div>
+          <p className="mt-3 text-sm">
+            <strong>{profile.contentCount}</strong>{" "}
+            <span className="text-gray-500">works</span>
+          </p>
         </div>
       </div>
 

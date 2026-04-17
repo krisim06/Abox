@@ -15,6 +15,9 @@ interface CreateContentInput {
   parentContentId?: string;
 }
 
+// Contract:
+// - Input: normalized create payload from upload/remix flows.
+// - Output: ServiceResult<Content> (success with created row, or user-safe error).
 export async function createContent(
   input: CreateContentInput
 ): Promise<ServiceResult<Content>> {
@@ -78,6 +81,9 @@ export async function createContent(
   return { success: true, data: mapDbContent(data as DbContent) };
 }
 
+// Contract:
+// - Input: content id.
+// - Output: content + creator identity, or null when not found/unauthorized.
 export const getContentById = cache(async function getContentById(
   id: string
 ): Promise<ContentWithCreator | null> {
@@ -112,6 +118,9 @@ export const getContentById = cache(async function getContentById(
   };
 });
 
+// Contract:
+// - Input: page (1-based), limit.
+// - Output: paginated public feed with creator info and hasMore flag.
 export async function getFeed(
   page: number = 1,
   limit: number = 20
@@ -165,6 +174,9 @@ export async function getFeed(
   };
 }
 
+// Contract:
+// - Input: user id + pagination values.
+// - Output: paginated list of content owned by that user.
 export async function getContentsByUserId(
   userId: string,
   page: number = 1,
@@ -198,6 +210,9 @@ export async function getContentsByUserId(
   };
 }
 
+// Contract:
+// - Input: parent content id and optional max result limit.
+// - Output: newest remixes (children) with creator info.
 export async function getRemixes(
   contentId: string,
   limit: number = 10

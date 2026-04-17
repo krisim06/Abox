@@ -22,13 +22,7 @@ export interface ContentWithCreator extends Content {
   creator: Pick<User, "id" | "username" | "avatarUrl">;
 }
 
-export interface FeedItem extends ContentWithCreator {
-  likeCount: number;
-}
-
 export interface ProfileData {
   user: User;
   contentCount: number;
-  followerCount: number;
-  followingCount: number;
 }
