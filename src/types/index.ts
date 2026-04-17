@@ -1,4 +1,11 @@
-export type { DbUser, DbContent, DbLike, DbFollow } from "./database";
+export type {
+  DbUser,
+  DbContent,
+  DbLike,
+  DbFollow,
+  DbGenerationJob,
+  DbGenerationStatus,
+} from "./database";
 export type {
   User,
   Content,
@@ -9,3 +16,8 @@ export type {
   ServiceResult,
   PaginatedResult,
 } from "./service";
+export type {
+  GenerationStatus,
+  GenerationParams,
+  GenerationJob,
+} from "./generation";

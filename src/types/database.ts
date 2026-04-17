@@ -31,3 +31,29 @@ export interface DbFollow {
   following_id: string;
   created_at: string;
 }
+
+export type DbGenerationStatus =
+  | "queued"
+  | "running"
+  | "succeeded"
+  | "failed"
+  | "canceled";
+
+export interface DbGenerationJob {
+  id: string;
+  user_id: string;
+  status: DbGenerationStatus;
+  provider: string;
+  provider_job_id: string | null;
+  model: string;
+  prompt: string;
+  params: Record<string, unknown>;
+  output_content_id: string | null;
+  error_code: string | null;
+  error_message: string | null;
+  attempts: number;
+  created_at: string;
+  updated_at: string;
+  started_at: string | null;
+  finished_at: string | null;
+}
