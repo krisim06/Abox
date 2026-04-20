@@ -29,3 +29,25 @@ export interface GenerationJob {
   startedAt: string | null;
   finishedAt: string | null;
 }
+
+// ---------------------------------------------------------------------------
+// API contract (POST /api/generate)
+// ---------------------------------------------------------------------------
+// These shapes are the stable boundary between clients and the server.
+// They are intentionally narrower than GenerationJob so we can evolve internal
+// fields (attempts, provider_job_id, error_code, ...) without breaking clients.
+
+export interface CreateGenerationJobRequest {
+  provider: string;
+  model: string;
+  prompt: string;
+  params?: GenerationParams;
+}
+
+export interface CreateGenerationJobResponse {
+  jobId: string;
+  status: GenerationStatus;
+  provider: string;
+  model: string;
+  createdAt: string;
+}

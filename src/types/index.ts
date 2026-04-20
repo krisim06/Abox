@@ -20,4 +20,6 @@ export type {
   GenerationStatus,
   GenerationParams,
   GenerationJob,
+  CreateGenerationJobRequest,
+  CreateGenerationJobResponse,
 } from "./generation";
