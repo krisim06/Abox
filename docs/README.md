@@ -5,6 +5,7 @@ This bundle is a revised, AI-native documentation set for **ABox**, designed for
 ## What changed
 
 The previous ABox direction centered on:
+
 - authentication
 - profile creation
 - image upload
@@ -12,6 +13,7 @@ The previous ABox direction centered on:
 - likes/follows
 
 The revised direction centers on:
+
 - prompt-based creation
 - async generation jobs
 - AI orchestration
