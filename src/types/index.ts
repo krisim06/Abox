@@ -46,3 +46,16 @@ export type {
   PlanRetrievedChunk,
   GenerationPlan,
 } from "./planning";
+export type {
+  EvaluationReasonCode,
+  EvaluationVerdict,
+  RetryCategory,
+  EvaluationReason,
+  EvaluationResult,
+  GenerationOutput,
+  RetryDecision,
+  RetryOfRecord,
+  FinalizeGenerationJobRequest,
+  FinalizeGenerationJobResponse,
+  FinalizeGenerationJobResponseJob,
+} from "./evaluation";

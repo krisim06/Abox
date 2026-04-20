@@ -22,6 +22,7 @@ ABox should evolve from a content upload app into an AI-native product without t
 - **Supabase Storage**
 
 This stack remains a good fit for the MVP because it gives:
+
 - fast product iteration
 - one operational backend surface
 - SQL flexibility
@@ -68,19 +69,24 @@ User
 ## 5. System layers
 
 ### 5.1 UI layer
+
 Responsibilities:
+
 - forms
 - user interactions
 - loading / status display
 - rendering content pages
 
 Must not contain:
+
 - generation orchestration logic
 - direct business rules
 - data mutation sprawl
 
 ### 5.2 Route/API layer
+
 Responsibilities:
+
 - auth/session boundary
 - request parsing
 - request validation handoff
@@ -90,7 +96,9 @@ Responsibilities:
 Must remain thin.
 
 ### 5.3 Service / orchestration layer
+
 Responsibilities:
+
 - validating domain-level intent
 - coordinating content creation and job creation
 - calling retrieval in later phases
@@ -99,14 +107,18 @@ Responsibilities:
 This is the “application brain,” but not the model itself.
 
 ### 5.4 Persistence layer
+
 Responsibilities:
+
 - database queries
 - insert/update/select helpers
 - transaction-friendly boundaries
 - storage persistence helpers
 
 ### 5.5 AI layer
+
 Responsibilities:
+
 - request analysis
 - retrieval interfaces
 - generation plan construction
@@ -117,6 +129,7 @@ This layer should stay separate from transport and UI.
 ## 6. Primary MVP flow
 
 ### Create flow
+
 1. Authenticated user submits prompt
 2. API route passes request to service layer
 3. Service validates request
@@ -127,6 +140,7 @@ This layer should stay separate from transport and UI.
 8. Content status is updated when generation completes or fails
 
 ### Read flow
+
 1. User opens content page
 2. UI fetches content record and related job/result state
 3. Asset and metadata are rendered
@@ -134,6 +148,7 @@ This layer should stay separate from transport and UI.
 ## 7. Async generation jobs
 
 Generation must be asynchronous because:
+
 - generation can be slow
 - failures need explicit handling
 - retries need a durable state model
@@ -152,6 +167,7 @@ Request -> Analyze -> Retrieve context -> Build plan -> Create/execute job
 ```
 
 The retrieval layer owns:
+
 - document storage model
 - chunking rules
 - embedding abstraction
@@ -164,6 +180,7 @@ The orchestrator decides when to call retrieval.
 ABox should not add a full MCP server on day one. However, tool boundaries should already be explicit enough that they can later map cleanly to MCP-style interfaces.
 
 Examples:
+
 - get user profile
 - retrieve style guides
 - create generation job
@@ -173,6 +190,7 @@ Examples:
 ## 10. Observability
 
 At minimum, ABox should log and track:
+
 - job creation success/failure
 - job status transitions
 - generation error categories
@@ -202,6 +220,7 @@ src/
 ```
 
 Guidance:
+
 - `db/` for persistence logic
 - `ai/` for retrieval/planning/evaluation logic
 - `tools/` for external or tool-like boundaries
@@ -212,17 +231,20 @@ Adapt to the existing project if it already has acceptable organization.
 ## 13. Scale path
 
 ### Now
+
 - single web app + database + storage
 - async generation jobs
 - clean module boundaries
 
 ### Next
+
 - RAG document/chunk foundation
 - generation planning
 - evaluator + retry
 - user taste memory
 
 ### Later
+
 - richer workers
 - multi-modal generation
 - more advanced tool orchestration
@@ -231,6 +253,7 @@ Adapt to the existing project if it already has acceptable organization.
 ## 14. Architectural non-goals
 
 Not doing yet:
+
 - microservices for the sake of it
 - distributed agent frameworks
 - speculative infra layers
@@ -239,7 +262,9 @@ Not doing yet:
 ## 15. Summary decision
 
 ABox should be built like a serious startup product:
+
 - lean now
 - structured enough to grow
 - careful with rewrites
 - explicit in data and workflow boundaries
+

@@ -7,9 +7,11 @@ Define stable request/response shapes for the MVP API surface.
 ## 1. POST /api/generate
 
 ### Purpose
+
 Create a generation request and durable async job.
 
 ### Request
+
 ```json
 {
   "prompt": "dreamy city-pop album cover at night",
@@ -18,6 +20,7 @@ Create a generation request and durable async job.
 ```
 
 ### Response
+
 ```json
 {
   "contentId": "uuid",
@@ -27,6 +30,7 @@ Create a generation request and durable async job.
 ```
 
 ### Errors
+
 - `401` unauthenticated
 - `400` invalid prompt
 - `500` internal job creation error
@@ -34,9 +38,11 @@ Create a generation request and durable async job.
 ## 2. GET /api/jobs/:id
 
 ### Purpose
+
 Fetch current job state
 
 ### Response
+
 ```json
 {
   "jobId": "uuid",
@@ -49,9 +55,11 @@ Fetch current job state
 ## 3. GET /api/content/:id
 
 ### Purpose
+
 Fetch generated or uploaded content metadata and status
 
 ### Response
+
 ```json
 {
   "id": "uuid",
@@ -68,9 +76,11 @@ Fetch generated or uploaded content metadata and status
 ## 4. POST /api/knowledge-documents
 
 ### Purpose
+
 Create a retrieval source document
 
 ### Request
+
 ```json
 {
   "docType": "style_guide",
@@ -82,9 +92,11 @@ Create a retrieval source document
 ## 5. POST /api/retrieval/test
 
 ### Purpose
+
 Run a test retrieval query for development/admin use
 
 ### Request
+
 ```json
 {
   "query": "dreamy retro city-pop aesthetic",
@@ -93,6 +105,7 @@ Run a test retrieval query for development/admin use
 ```
 
 ### Response
+
 ```json
 {
   "results": [
@@ -107,6 +120,8 @@ Run a test retrieval query for development/admin use
 ```
 
 ## Notes
+
 - Keep responses stable and typed
 - Do not leak internal fields casually
 - Route handlers remain thin even if these contracts expand
+
