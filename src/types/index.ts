@@ -5,6 +5,11 @@ export type {
   DbFollow,
   DbGenerationJob,
   DbGenerationStatus,
+  DbKnowledgeDocument,
+  DbKnowledgeChunk,
+  DbKnowledgeChunkMatch,
+  DbKnowledgeDocType,
+  DbKnowledgeVisibility,
 } from "./database";
 export type {
   User,
@@ -23,3 +28,13 @@ export type {
   CreateGenerationJobRequest,
   CreateGenerationJobResponse,
 } from "./generation";
+export type {
+  KnowledgeDocType,
+  KnowledgeVisibility,
+  KnowledgeDocument,
+  KnowledgeChunkMatch,
+  CreateKnowledgeDocumentRequest,
+  CreateKnowledgeDocumentResponse,
+  SearchKnowledgeRequest,
+  SearchKnowledgeResponse,
+} from "./knowledge";

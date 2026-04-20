@@ -2,9 +2,13 @@ import type {
   DbUser,
   DbContent,
   DbGenerationJob,
+  DbKnowledgeDocument,
+  DbKnowledgeChunkMatch,
   User,
   Content,
   GenerationJob,
+  KnowledgeDocument,
+  KnowledgeChunkMatch,
 } from "@/types";
 
 export function mapDbUser(row: DbUser): User {
@@ -28,6 +32,38 @@ export function mapDbContent(row: DbContent): Content {
     seed: row.seed,
     parentContentId: row.parent_content_id,
     createdAt: row.created_at,
+  };
+}
+
+export function mapDbKnowledgeDocument(
+  row: DbKnowledgeDocument
+): KnowledgeDocument {
+  return {
+    id: row.id,
+    ownerUserId: row.owner_user_id,
+    docType: row.doc_type,
+    title: row.title,
+    body: row.body,
+    visibility: row.visibility,
+    metadata: row.metadata ?? {},
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+export function mapDbKnowledgeChunkMatch(
+  row: DbKnowledgeChunkMatch
+): KnowledgeChunkMatch {
+  return {
+    chunkId: row.chunk_id,
+    documentId: row.document_id,
+    chunkIndex: row.chunk_index,
+    chunkText: row.chunk_text,
+    chunkMetadata: row.chunk_metadata ?? {},
+    docType: row.doc_type,
+    docTitle: row.doc_title,
+    docVisibility: row.doc_visibility,
+    similarity: row.similarity,
   };
 }
 

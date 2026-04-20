@@ -1,146 +1,204 @@
-# ABox Product Requirements Document
+# Product Requirements Document (PRD)
 
-## Product Summary
+## Document status
+- Owner: ABox
+- Stage: MVP definition
+- Version: Revised for AI-native direction
 
-ABox is an AI creator publishing platform for image-first AI content.
+## 1. Product summary
 
-The goal is to help creators publish, share, remix, and discover AI-generated works.
+ABox is an AI creation and sharing platform where users can turn prompts into creative assets, starting with images and expanding later to video and audio. The product should feel closer to an intelligent creative workspace than a simple prompt box or image upload feed.
 
-Core loop:
+The MVP focus is not full autonomy. It is a clean, reliable first system for:
 
-- creation (창작)
-- sharing (공유)
-- remix (재창작)
-- monetization (수익화)
-- community (커뮤니티)
+1. accepting a prompt
+2. creating a generation job
+3. producing a result
+4. saving and displaying that result
+5. establishing the foundation for retrieval, evaluation, and personalization
 
----
+## 2. Problem
 
-## Problem
+Most AI creation products fall into one of two weak patterns:
 
-AI creators have powerful generation tools, but no strong native platform focused on publishing and remix relationships.
+- **toy generators** with no durable system design
+- **heavy creative suites** that are too broad for early-stage focus
 
-Today, creators often use external tools to generate content, then publish on generic platforms that do not preserve prompt, model, seed, or remix lineage.
+ABox should solve a narrower and more useful problem:
 
----
+> Help users generate creative work with better structure, memory, and product quality than a raw prompt-to-image demo.
 
-## Product Vision
+The product should support future differentiation through:
+- reusable style knowledge
+- policy-aware generation
+- user taste memory
+- evaluation and iteration
+- content discovery/sharing
 
-ABox should become a creator-native platform where AI-generated content can be:
+## 3. Vision
 
-- published cleanly
-- attributed properly
-- remixed easily
-- discovered through relationships, not only feeds
+ABox becomes a creative AI platform that:
+- understands what a user is trying to make
+- can retrieve helpful context before generating
+- produces assets that are saved, organized, and shareable
+- gradually learns user taste over time
 
----
+## 4. Target users
 
-## Target Users
+### Primary
+**Creative explorers**
+- want fast generation from prompts
+- care about vibe, style, and presentation
+- want results they can save/share
 
-Initial target users:
+### Secondary
+**Power users / creative builders**
+- care about prompt quality
+- want repeatable style outcomes
+- want history, structure, and eventually personalization
 
-- AI image creators
-- Midjourney users
-- Stable Diffusion users
-- ComfyUI users
+### Tertiary
+**Early adopters who treat the product as a creative lab**
+- willing to try new generation modes
+- give useful product feedback
+- stress-test the workflow
 
----
+## 5. Jobs to be done
 
-## MVP Goals
+### Functional jobs
+- Generate a creative asset from a text prompt
+- View the resulting asset with metadata
+- Revisit previously generated content
+- Discover or reuse styles/templates over time
 
-The MVP should prove that creators are willing to:
+### Emotional jobs
+- Feel creatively assisted, not blocked
+- Feel the system “gets” the intended vibe
+- Feel work is worth saving and sharing
 
-- upload their works
-- attach metadata
-- view other creators’ works
-- remix existing works
-- build a profile identity on the platform
+## 6. MVP goals
 
----
+The MVP must deliver:
 
-## MVP Features
+1. **Prompt-to-generation flow**
+   - Authenticated user submits a prompt
+   - System creates async generation job
+   - Result is stored and shown on a content page
 
-### 1. Authentication
+2. **Job lifecycle**
+   - queued
+   - running
+   - completed
+   - failed
 
-Users can sign up, sign in, and access authenticated product features.
+3. **Generation metadata**
+   - prompt
+   - revised/generated plan prompt if available
+   - model name
+   - status
+   - timestamps
 
-### 2. Content Upload
+4. **Foundations for future AI quality**
+   - retrieval-ready knowledge layer
+   - evaluation-ready architecture
+   - clean separation of orchestration and persistence
 
-Users can upload image-based AI content with metadata:
+5. **Startup-speed maintainability**
+   - no big-bang rewrite
+   - no fragile demo architecture
+   - minimal but scalable interfaces
 
-- title
-- prompt
-- model
-- seed
-- image file
+## 7. MVP non-goals
 
-### 3. Public Feed
+Not required for MVP launch:
+- full multi-agent orchestration
+- fully automated prompt refinement loops
+- advanced personalization
+- video/audio generation in production
+- marketplace/payment features
+- large moderation backend beyond sensible MVP safeguards
+- broad collaborative features
 
-Users can browse recently published content.
+## 8. Core user flows
 
-### 4. Content Detail Page
+### Flow A: Prompt-based creation
+1. User signs in
+2. User enters prompt on create screen
+3. User submits request
+4. System validates request and creates job
+5. User sees job state
+6. Result becomes available on content page
 
-Each content item should have its own detail page with:
+### Flow B: View result
+1. User opens generated content
+2. User sees asset, prompt, metadata, status
+3. User can revisit/share later
 
-- image
-- title
-- creator
-- prompt
-- model
-- seed
-- remix action
+### Flow C: Future retrieval-enhanced generation
+1. User enters prompt
+2. System retrieves relevant style/policy/template context
+3. System builds a cleaner generation plan
+4. Job runs against that plan
 
-### 5. Creator Profile
+## 9. Functional requirements
 
-Each user should have a profile page showing:
+### Required now
+- Authenticated create flow
+- Async job record creation
+- Content placeholder or pending content record
+- Generation result persistence
+- Content detail view
+- Basic error handling
+- Basic validation
+- Clear status model
 
-- username
-- avatar
-- bio
-- created works
+### Required soon after
+- RAG document storage
+- Knowledge chunk retrieval
+- Retrieval hook in generation planning
+- Simple evaluation and retry policy
 
-### 6. Remix Flow
+## 10. Non-functional requirements
 
-Users should be able to remix an existing work.
-The remix flow should:
+- Maintainable TypeScript codebase
+- Thin route handlers
+- Explicit service boundaries
+- Clear DB ownership and RLS posture
+- Reasonable response time for job creation
+- Safe failure states
+- Easy migration path from current upload-oriented foundation
 
-- prefill prompt/model/seed from the source work
-- let the user modify metadata
-- save a new content item
-- preserve the parent-child relationship
+## 11. Success metrics
 
----
+### MVP health metrics
+- Job creation success rate
+- Percentage of jobs that reach terminal state correctly
+- Time from prompt submit to visible job state
+- Time from job start to result availability
+- Content detail page load success
 
-## Non-Goals for MVP
+### Product quality metrics
+- Share of generated results users keep/view again
+- Manual rating of result quality on seed prompts
+- Retrieval usefulness on controlled test set
+- Failure rate by category
 
-Do not build these yet:
+## 12. Risks
 
-- AI generation inside the platform
-- payments
-- subscriptions
-- recommendation engine
-- comments
-- notifications
-- advanced moderation
-- internal messaging
+- Overbuilding agents too early
+- Rewriting working auth/storage unnecessarily
+- Mixing AI orchestration into UI layer
+- Weak status handling causing broken UX
+- Retrieval built without permissions discipline
+- Low-quality results with no evaluation plan
 
----
+## 13. Open questions
 
-## Product Principles
+- What generation provider/model path is used first?
+- Should prompt templates be system-owned only in MVP?
+- What exact content moderation level is required pre-launch?
+- When should user taste memory become active?
 
-- Keep the experience simple
-- Start with image-first scope
-- Preserve future remix lineage support
-- Optimize for real creator usage, not feature quantity
-- Build for clarity and future extensibility
+## 14. Product principle
 
----
-
-## Success Criteria
-
-Initial success signals:
-
-- first 50 creators sign up
-- creators upload at least 3 pieces of content on average
-- at least some users use remix
-- users revisit profile and feed pages
+> ABox should feel like a serious creative product with startup speed, not a fragile AI demo.

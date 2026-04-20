@@ -39,6 +39,51 @@ export type DbGenerationStatus =
   | "failed"
   | "canceled";
 
+export type DbKnowledgeDocType =
+  | "style_guide"
+  | "policy"
+  | "prompt_template";
+
+export type DbKnowledgeVisibility = "system" | "public" | "private";
+
+export interface DbKnowledgeDocument {
+  id: string;
+  owner_user_id: string | null;
+  doc_type: DbKnowledgeDocType;
+  title: string;
+  body: string;
+  visibility: DbKnowledgeVisibility;
+  metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DbKnowledgeChunk {
+  id: string;
+  document_id: string;
+  chunk_index: number;
+  chunk_text: string;
+  // pgvector is exposed as a string like "[0.1,0.2,...]" through PostgREST.
+  // We normally do not read it back from the client; the retrieval RPC
+  // returns similarity instead. Typed as string for completeness.
+  embedding: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+// Row shape returned by the public.match_knowledge_chunks RPC.
+export interface DbKnowledgeChunkMatch {
+  chunk_id: string;
+  document_id: string;
+  chunk_index: number;
+  chunk_text: string;
+  chunk_metadata: Record<string, unknown>;
+  doc_type: DbKnowledgeDocType;
+  doc_title: string;
+  doc_visibility: DbKnowledgeVisibility;
+  similarity: number;
+}
+
 export interface DbGenerationJob {
   id: string;
   user_id: string;

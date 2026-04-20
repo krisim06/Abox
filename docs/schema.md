@@ -1,108 +1,236 @@
-# ABox Database Schema
+# Schema
 
-Database: Supabase PostgreSQL
+## 1. Schema goals
 
-## Notes
+The schema should:
+- preserve useful existing tables
+- support async generation workflows
+- support future retrieval
+- remain simple enough for MVP
+- avoid destructive rewrites unless clearly necessary
 
-This is the initial schema for the MVP.
-It should support:
+## 2. Existing core tables to preserve
 
-- users
-- content publishing
-- remix relationships
-- future feed growth
+These are still useful and should remain part of the model:
 
----
+- `users`
+- `contents`
+- `likes`
+- `follows`
 
-## users
+## 3. Revised data model posture
 
-Represents creator profiles.
+The key shift is this:
 
-Fields:
+**Before:** content was primarily upload-oriented  
+**Now:** content can also be generation-originated
 
-- id (uuid, primary key)
-- username (text, unique, required)
-- bio (text, nullable)
-- avatar_url (text, nullable)
-- created_at (timestamp, required)
+That means `contents` becomes the main durable record for both:
+- uploaded creative assets
+- generated creative assets
 
----
+## 4. Core tables
 
-## contents
+### 4.1 users
+Purpose:
+- user profile metadata linked to auth
 
-Represents published AI-generated content.
+Suggested posture:
+- keep existing trigger-based profile creation if it works
+- do not rebuild auth/user sync unless broken
 
-Fields:
+Example fields:
+- `id`
+- `username`
+- `bio`
+- `avatar_url`
+- `created_at`
 
-- id (uuid, primary key)
-- user_id (uuid, foreign key to users.id, required)
-- title (text, required)
-- image_url (text, required)
-- prompt (text, required)
-- model (text, required)
-- seed (text, nullable)
-- parent_content_id (uuid, foreign key to contents.id, nullable)
-- created_at (timestamp, required)
+### 4.2 contents
+Purpose:
+- durable content record for uploaded or generated assets
+
+Recommended fields:
+- `id`
+- `user_id`
+- `title`
+- `prompt`
+- `revised_prompt`
+- `asset_type` (`image`, later `video`, `audio`)
+- `status` (`queued`, `processing`, `completed`, `failed`)
+- `image_url` or more general asset URL field
+- `model_name`
+- `seed`
+- `parent_content_id`
+- `safety_label`
+- `quality_score`
+- `created_at`
 
 Notes:
+- If an existing `contents` table already exists, extend it incrementally
+- Avoid dropping old columns unless clearly obsolete
 
-- parent_content_id is nullable for original content
-- parent_content_id is set when a content item is a remix
+### 4.3 generation_jobs
+Purpose:
+- durable async execution record for creation requests
 
----
+Recommended fields:
+- `id`
+- `user_id`
+- `content_id`
+- `job_type`
+- `input_payload`
+- `status`
+- `error_message`
+- `attempts`
+- `created_at`
+- `updated_at`
 
-## likes
+Recommended status set:
+- `queued`
+- `running`
+- `completed`
+- `failed`
 
-Represents a user liking a content item.
+### 4.4 likes
+Purpose:
+- user engagement signal
+- later useful for taste modeling
 
-Fields:
+### 4.5 follows
+Purpose:
+- creator graph / future feed relevance
 
-- id (uuid, primary key)
-- user_id (uuid, foreign key to users.id, required)
-- content_id (uuid, foreign key to contents.id, required)
-- created_at (timestamp, required)
+## 5. Retrieval foundation tables
 
-Constraint:
+### 5.1 knowledge_documents
+Purpose:
+- store source documents for retrieval
 
-- unique(user_id, content_id)
+Recommended fields:
+- `id`
+- `owner_user_id` (nullable if system-owned)
+- `doc_type`
+- `title`
+- `body`
+- `visibility` (`system`, `public`, `private`)
+- `metadata`
+- `created_at`
+- `updated_at`
 
----
+Initial `doc_type` recommendations:
+- `style_guide`
+- `policy`
+- `prompt_template`
 
-## follows
+### 5.2 knowledge_chunks
+Purpose:
+- retrieval units derived from documents
 
-Represents one user following another.
+Recommended fields:
+- `id`
+- `document_id`
+- `chunk_index`
+- `chunk_text`
+- `embedding`
+- `metadata`
+- `created_at`
 
-Fields:
+Notes:
+- chunk-level embeddings live here
+- document-level metadata stays in `knowledge_documents`
 
-- id (uuid, primary key)
-- follower_id (uuid, foreign key to users.id, required)
-- following_id (uuid, foreign key to users.id, required)
-- created_at (timestamp, required)
+## 6. Deferred but expected tables
 
-Constraint:
+### 6.1 content_embeddings
+Purpose:
+- semantic search across generated/saved contents
 
-- unique(follower_id, following_id)
+Can wait until retrieval for content discovery becomes important.
 
----
+Suggested fields:
+- `content_id`
+- `embedding`
+- `source_text`
+- `updated_at`
 
-## Suggested Future Indexes
+### 6.2 user_taste_profiles
+Purpose:
+- compact representation of user taste/preferences
 
-Consider indexes for:
+Not required for first MVP, but design should leave space for it.
 
-- contents.created_at
-- contents.user_id
-- contents.parent_content_id
-- likes.content_id
-- follows.follower_id
-- follows.following_id
+Suggested fields:
+- `user_id`
+- `summary`
+- `embedding`
+- `updated_at`
 
----
+## 7. Relationships
 
-## Row-Level Security Considerations
+```text
+users 1---* contents
+users 1---* generation_jobs
+contents 1---* generation_jobs (usually one active or most recent primary job)
+knowledge_documents 1---* knowledge_chunks
+users 1---* knowledge_documents (for private docs if enabled)
+```
 
-Later, policies should ensure:
+## 8. Indexing guidance
 
-- only authenticated users can upload
-- only content owners can edit/delete their own content
-- public content can be read by everyone
-- private/internal routes do not leak unauthorized data
+### Required early
+- `contents(user_id)`
+- `contents(created_at desc)`
+- `generation_jobs(user_id, created_at desc)`
+- `generation_jobs(content_id)`
+- `knowledge_chunks(document_id, chunk_index)`
+
+### Add when embeddings are active
+- vector index on `knowledge_chunks.embedding`
+- vector index on `content_embeddings.embedding`
+
+## 9. RLS / access model
+
+### users
+- user can read/update own profile
+- public profile reads can be allowed if product needs it
+
+### contents
+- owners can fully manage own draft/pending/generated content
+- public visibility rules can evolve later
+
+### generation_jobs
+- owner can read own jobs
+- owner cannot spoof ownership
+
+### knowledge_documents
+- `system`: application-owned, readable where intended
+- `public`: shared/readable
+- `private`: only owner can read
+
+### knowledge_chunks
+- access should inherit from parent document visibility rules
+
+## 10. Migration strategy
+
+### Phase 1
+- keep existing `users`, `contents`, `likes`, `follows`
+- add/extend `contents` status-related fields only if missing
+- add `generation_jobs`
+
+### Phase 2
+- add `knowledge_documents`
+- add `knowledge_chunks`
+- enable vector support if needed
+
+### Phase 3
+- add `content_embeddings`
+- add `user_taste_profiles`
+
+## 11. Design notes
+
+- Prefer additive migrations
+- Preserve current production/dev data where possible
+- Keep generated asset metadata in `contents`
+- Keep execution state in `generation_jobs`
+- Keep retrieval source documents separate from user content
