@@ -38,3 +38,11 @@ export type {
   SearchKnowledgeRequest,
   SearchKnowledgeResponse,
 } from "./knowledge";
+export type {
+  AssetType,
+  SafetyMode,
+  RetrievalTarget,
+  PromptAnalysis,
+  PlanRetrievedChunk,
+  GenerationPlan,
+} from "./planning";

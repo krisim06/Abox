@@ -6,13 +6,13 @@ import type {
 } from "@/types";
 
 // Thin HTTP adapter:
-// - parse the JSON body
+// - parse JSON
 // - delegate every decision to the service layer
 // - map ServiceResult.errorCode to an HTTP status code
 //
-// No validation, auth, or DB access happens here. Keeping the route layer this
-// thin is what lets us reuse the service from server actions, workers, or
-// tests without copying HTTP plumbing.
+// No validation, auth, retrieval, or planning happens here (docs/rules.md §4).
+// Route stays thin so the service is reusable from server actions, workers,
+// or tests without copying HTTP plumbing.
 
 export async function POST(request: Request) {
   let body: CreateGenerationJobRequest;
@@ -26,9 +26,10 @@ export async function POST(request: Request) {
   }
 
   const result = await createGenerationJob({
+    prompt: body.prompt,
+    assetType: body.assetType,
     provider: body.provider,
     model: body.model,
-    prompt: body.prompt,
     params: body.params,
   });
 
@@ -39,16 +40,17 @@ export async function POST(request: Request) {
     );
   }
 
-  const job = result.data;
+  const { job, plan } = result.data;
   const response: CreateGenerationJobResponse = {
     jobId: job.id,
     status: job.status,
     provider: job.provider,
     model: job.model,
     createdAt: job.createdAt,
+    plan,
   };
 
-  // 202 Accepted: the request is accepted for async processing; the client
+  // 202 Accepted: the request is queued for async processing; the client
   // should poll / subscribe to the job to observe progress.
   return NextResponse.json(response, { status: 202 });
 }
